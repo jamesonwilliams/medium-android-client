@@ -21,116 +21,101 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View.OnClickListener;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.common.collect.ImmutableMap;
-
 import com.medium.api.model.User;
 
-import java.util.Map;
-
 /**
- * UserActivity shows infromation about a Medium user.
+ * UserActivity is a UserView which shows information about a user.
  */
-public class UserActivity extends Activity {
+public class UserActivity extends Activity implements UserView {
+
+    /**
+     * The view for the user's avatar.
+     */
+    private ImageView mAvatar;
+
+    /**
+     * The view fro the user's id.
+     */
+    private TextView mId;
+
+    /**
+     * The view for the user's username.
+     */
+    private TextView mUsername;
+
+    /**
+     * The view for the user's name.
+     */
+    private TextView mName;
+
+    /**
+     * A handle to the user presenter.
+     */
+    private UserPresenter mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bindToXmlViews();
+
+        mPresenter = new UserPresenter(
+            ((MediumApplication) getApplicationContext()).getMedium(),
+            this
+        );
+
+        mPresenter.present();
+    }
+
+    /**
+     * Assimilate the XML portion of the logical "View" into this Java
+     * instance.
+     */
+    private void bindToXmlViews() {
         setContentView(R.layout.user);
 
-        presentUser(
-            ((MediumApplication) getApplicationContext()).getMedium()
-                .getUser()
-        );
+        mAvatar = (ImageView) findViewById(R.id.user_image);
+        mId = (TextView) findViewById(R.id.user_id);
+        mUsername = (TextView) findViewById(R.id.user_username);
+        mName = (TextView) findViewById(R.id.user_name);
+    }
+
+    @Override
+    public void displayUsername(final String username, final String url) {
+        mUsername.setText(username);
+        mUsername.setOnClickListener(visitUrlOnClick(url));
+    }
+
+    @Override
+    public void displayName(final String name) {
+        mName.setText(name);
+    }
+
+    @Override
+    public void displayAvatar(final Bitmap avatar, final String url) {
+        mAvatar.setImageBitmap(avatar);
+        mAvatar.setOnClickListener(visitUrlOnClick(url));
+    }
+
+    @Override
+    public void displayId(final String id) {
+        mId.setText(id);
     }
 
     /**
-     * Presents a user into a user view, from a user model.
-     *
-     * @param user the data model from which to gather data and populate
-     *             the view
+     * Creates a new click listener which will fire an intent to open a
+     * browser to view an URL.
      */
-    private void presentUser(final User user) {
-        loadImagesAsync(ImmutableMap.of(
-            R.id.user_image, user.getImageUrl()
-        ));
-
-        loadText(ImmutableMap.of(
-            R.id.user_name, user.getName(),
-            R.id.user_username, user.getUsername(),
-            R.id.user_id, user.getId()
-        ));
-
-        bindClickListeners(ImmutableMap.of(
-            R.id.user_image, buildOnClickVisitUrl(user.getImageUrl()),
-            R.id.user_username, buildOnClickVisitUrl(user.getUrl())
-        ));
-    }
-
-    /**
-     * Loads a collections of texts into textviews referenced by
-     * resource ids.
-     *
-     * @param bindings a map of resource id to string content to
-     *                 populate into the views referenced by those ids.
-     */
-    private void loadText(final Map<Integer, String> bindings) {
-        for (final Map.Entry<Integer, String> binding : bindings.entrySet()) {
-            ((TextView) findViewById(binding.getKey())).setText(binding.getValue());
-        }
-    }
-
-    /**
-     * Binds a collection of {@link View.OnClickListener}s to a
-     * collection of {@link View}s, specified resource ids to their
-     * definitions in a resources file.
-     *
-     * @param bindings a map of resource id to click listeners
-     */
-    private void bindClickListeners(final Map<Integer, View.OnClickListener> bindings) {
-        for (final Map.Entry<Integer, View.OnClickListener> binding : bindings.entrySet()) {
-            findViewById(binding.getKey()).setOnClickListener(binding.getValue());
-        }
-    }
-
-    /**
-     * Loads a collection of images from URLs asynchronously into a
-     * collection of {@link ImageView}s referenced by resource ids.
-     *
-     * @param bindings a map of resource id to image url
-     */
-    private void loadImagesAsync(final Map<Integer, String> bindings) {
-        for (final Map.Entry<Integer, String> binding : bindings.entrySet()) {
-            new DownloadImageTask(new DownloadImageTask.Listener() {
-                @Override
-                public void onImageDownloaded(final Bitmap bitmap) {
-                    ((ImageView) findViewById(binding.getKey()))
-                        .setImageBitmap(bitmap);
-                }
-            }).execute(binding.getValue());
-        }
-    }
-
-    /**
-     * Builds a {@link View.OnClickListener} which, upon being
-     * triggered, will initiate the activity to view the content at the
-     * provided URL.
-     *
-     * @param url the url that will be visited when the click listener
-     *            activated (ostensibly, because a view has been
-     *            clicked.)
-     */
-    private View.OnClickListener buildOnClickVisitUrl(final String url) {
-        return new OnClickListener() {
+    private View.OnClickListener visitUrlOnClick(final String url) {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(
-                    Intent.ACTION_VIEW, Uri.parse(url)
-                ));
+                startActivity(
+                    new Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                );
             }
         };
     }

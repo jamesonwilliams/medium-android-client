@@ -76,6 +76,15 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     }
 
     /**
+     * Downloads image resources from a list of URLs concurrently.
+     *
+     * @param urls URLs to the images to download
+     */
+    public void download(final String... urls) {
+        executeOnExecutor(THREAD_POOL_EXECUTOR, urls);
+    }
+
+    /**
      * The Listener of a DownloadImageTask will receive a notification
      * when the image becomes available.
      *
