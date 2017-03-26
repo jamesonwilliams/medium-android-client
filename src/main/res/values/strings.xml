@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">UserActivity</string>
+    <string name="app_name">Medium Android Demo</string>
+    <string name="access_token">YOUR_ACCESS_TOKEN_HERE</string>
+
+    <string name="user_name_label">User\'s Name</string>
+    <string name="user_id_label">User\'s Medium ID</string>
+    <string name="user_image_description">An Image of a Medium.com user</string>
 </resources>
