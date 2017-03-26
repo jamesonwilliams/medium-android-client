@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:name="MediumApplication"
           android:label="@string/app_name"
-          android:icon="@drawable/ic_launcher"
+          android:icon="@drawable/ic_favorite_border_white_24dp"
           android:allowBackup="true">
         <activity android:name="UserActivity"
                   android:label="@string/app_name">
