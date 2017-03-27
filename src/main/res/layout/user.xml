@@ -7,15 +7,18 @@
     >
     <ImageView
         android:id="@+id/user_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitXY"
         android:contentDescription="@string/user_image_description"
+        android:src="@drawable/ic_account_box_white_48dp"
         />
     <TextView
         android:id="@+id/user_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=""
+        android:textColor="#00ab6b"
         android:textSize="40dp"
         />
 

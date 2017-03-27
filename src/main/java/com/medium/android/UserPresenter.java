@@ -51,16 +51,16 @@ public class UserPresenter implements UserProvider.Observer {
 
     @Override
     public void onUserAvailable(final User user) {
-        /*
-         * Present the image resource url as a Bitmap.
-         */
+        // Present this stuff as soon as possible
+        mView.displayUsername(user.getUsername(), user.getUrl());
+        mView.displayName(user.getName());
+        mView.displayId(user.getId());
+
+        // Async load the image bitmap
         new DownloadImageTask(new DownloadImageTask.Listener() {
             @Override
             public void onImageDownloaded(final Bitmap bitmap) {
-                mView.displayUsername(user.getUsername(), user.getUrl());
-                mView.displayName(user.getName());
                 mView.displayAvatar(bitmap, user.getImageUrl());
-                mView.displayId(user.getId());
             }
         }).download(user.getImageUrl());
     }
